@@ -6,10 +6,11 @@
 
 - model: 单场景离线数据使用示例
 - offline: 作品离线数据使用示例
-- open: 对接OpenAPI(众趣开发平台)数据使用示例
+- open: 对接 OpenAPI(众趣开发平台)数据使用示例
+- iot: IoT 应用示例
 
 ## 用法
 
 1. 进入示例代码目录
 2. 安装依赖: `npm install`
-3. 参考示例代码目录下README.md步骤启动项目
+3. 参考示例代码目录下 README.md 步骤启动项目
