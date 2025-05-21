@@ -1,5 +1,5 @@
 <template>
-  <div class="video-player-container" v-show="visible">
+  <div v-show="visible" class="video-player-container">
     <div class="video-player-wrapper">
       <div id="J_prismPlayer" class="video-player"></div>
       <div class="player-controls">
@@ -37,8 +37,10 @@ let player = null
  * 初始化播放器
  * @param {string} url - 视频URL
  */
-const initPlayer = (url) => {
-  if (!url) return
+const initPlayer = url => {
+  if (!url) {
+    return
+  }
 
   // 销毁可能存在的播放器实例
   destroyPlayer()
@@ -91,7 +93,7 @@ const closePlayer = () => {
 // 监听videoUrl变化
 watch(
   () => props.videoUrl,
-  (newUrl) => {
+  newUrl => {
     if (props.visible && newUrl) {
       initPlayer(newUrl)
     }
@@ -101,7 +103,7 @@ watch(
 // 监听visible变化
 watch(
   () => props.visible,
-  (isVisible) => {
+  isVisible => {
     if (isVisible && props.videoUrl) {
       initPlayer(props.videoUrl)
     } else {

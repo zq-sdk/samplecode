@@ -23,7 +23,9 @@ export default defineConfig(() => {
             ])
 
             for (const [reg, value] of assetsFileNamesMap.entries()) {
-              if (reg.test(assetInfo.name)) return `assets${value}`
+              if (reg.test(assetInfo.name)) {
+                return `assets${value}`
+              }
             }
 
             return 'assets/[ext]/[name]-[hash].[ext]'
@@ -41,6 +43,13 @@ export default defineConfig(() => {
       vue(),
       AutoImport({
         resolvers: [ElementPlusResolver()],
+        include: [
+          /\.[tj]sx?$/, // .ts, .tsx, .js, .jsx
+          /\.vue$/,
+          /\.vue\?vue/, // .vue
+          /\.md$/, // .md
+        ],
+        imports: ['vue'],
       }),
       Components({
         resolvers: [ElementPlusResolver()],

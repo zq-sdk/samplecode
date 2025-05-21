@@ -1,2 +1,2 @@
-import offlineData from './offline.js';
-export default offlineData;
+import offlineData from './offline.js'
+export default offlineData

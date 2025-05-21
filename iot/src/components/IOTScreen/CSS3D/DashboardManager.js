@@ -297,7 +297,9 @@ export class DashboardManager {
    * @param {Object} data 设备数据
    */
   updateData(data) {
-    if (!data) return
+    if (!data) {
+      return
+    }
 
     this.data = data
     this.updateGaugeData()
@@ -316,7 +318,7 @@ export class DashboardManager {
     this.deviceId = deviceId
 
     // 注册设备数据更新回调
-    equipmentService.registerDeviceDataUpdate(deviceId, (data) =>
+    equipmentService.registerDeviceDataUpdate(deviceId, data =>
       this.updateData(data)
     )
   }
@@ -338,7 +340,9 @@ export class DashboardManager {
    * 更新仪表盘数据
    */
   updateGaugeData() {
-    if (!this.data) return
+    if (!this.data) {
+      return
+    }
 
     this.updateGaugeValue('voltage', this.data.ratedVoltage)
     this.updateGaugeValue('power', this.data.ratedPower)
@@ -390,7 +394,7 @@ export class DashboardManager {
    */
   destroy() {
     // 销毁所有图表实例
-    Object.values(this.charts).forEach((chart) => {
+    Object.values(this.charts).forEach(chart => {
       chart.dispose()
     })
 

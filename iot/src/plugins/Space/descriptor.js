@@ -1,3 +1,8 @@
+/**
+ * 空间服务描述器
+ * 负责管理 qspace 的初始化、场景切换、事件监听等核心功能
+ */
+
 import * as Events from '@produck/charon-events'
 import dataCenter from './DataCenter/index.js'
 import { offlineServer } from '../Service/index.js'
@@ -7,7 +12,16 @@ import { Put2DContent } from './Feature/Put2D/index.js'
 
 const { qspace } = window
 
+/**
+ * 空间服务类
+ * 继承事件发射器，提供空间相关的核心功能
+ * @extends Events.Simple.Emitter
+ */
 export class Space extends Events.Simple.Emitter {
+  /**
+   * 构造函数
+   * @param {Object} vue - Vue 实例
+   */
   constructor(vue) {
     super()
 
@@ -17,6 +31,8 @@ export class Space extends Events.Simple.Emitter {
     this.coreData = null
     this.sceneBarList = null
     this.currentSceneId = ''
+
+    // 空间状态管理
     this.state = {
       // 首入方式是否为飞入空间
       isD2P: false,
@@ -25,10 +41,13 @@ export class Space extends Events.Simple.Emitter {
       // 模型纹理是否已加载完成
       isTextureLoaded: false,
     }
+
     this.feature = {}
 
+    // 创建功能注入对象
     const injection = Object.freeze({ space: this })
 
+    // 初始化各种功能特性
     this.feature.tag = new Feature.Tag(injection)
     this.feature.floor = new Feature.Floor(injection)
     this.feature.view = new Feature.View(injection)
@@ -36,36 +55,57 @@ export class Space extends Events.Simple.Emitter {
     this.feature.camera = new Feature.Camera(injection)
     this.feature.put2dContent = new Put2DContent(injection)
 
-    // 调试
+    // 调试用：将功能对象暴露到全局
     window.feature = this.feature
   }
 
-  // 当前场景信息
+  /**
+   * 获取当前场景信息
+   * @returns {Object} 当前场景数据
+   */
   get currentScene() {
     return dataCenter.getExistSceneData(this.currentSceneId)
   }
 
-  // 当前点位 id，3D模式 & 平面模式时为 null
+  /**
+   * 获取当前点位 ID
+   * 3D模式 & 平面模式时为 null
+   * @returns {string|null} 当前点位 ID
+   */
   get currentWaypoint() {
     return this.qspace.model.waypoint
   }
 
-  // 当前场景的模型类型 model 模型 / purepano 全景
+  /**
+   * 获取当前场景的模型类型
+   * @returns {string} 模型类型：'model' 模型 / 'purepano' 全景
+   */
   get modelType() {
     return this.qspace.model.type
   }
 
-  // 当前模式 漫游、三维、平面
+  /**
+   * 获取当前视图模式
+   * @returns {string} 视图模式：漫游、三维、平面
+   */
   get viewMode() {
     return this.qspace.view.mode
   }
 
-  // 根据环境，获取部分插件初始化时使用的资源的地址，以适配不同启动模式
+  /**
+   * 获取资源基础 URL
+   * 根据环境，获取部分插件初始化时使用的资源的地址，以适配不同启动模式
+   * @returns {string} 资源基础 URL
+   */
   get resourceBaseUrl() {
     return `${offlineServer.baseUrl}/material`
   }
 
-  // 初始化，处理作品相关内容
+  /**
+   * 初始化空间服务
+   * 处理作品相关内容的初始化
+   * @returns {Promise<void>}
+   */
   async init() {
     const urlParams = new URLSearchParams(window.location.search)
     this.workId = urlParams.get('work_id')
@@ -83,7 +123,7 @@ export class Space extends Events.Simple.Emitter {
     await dataCenter.init(this.workId)
 
     // 首入场景 id
-    const entrySceneId = dataCenter.getEntrySenceId()
+    const entrySceneId = dataCenter.getEntrySceneId()
     // 当前作品全部场景
     this.sceneBarList = dataCenter.getSceneBarList()
     // 切换到首入场景
@@ -92,7 +132,11 @@ export class Space extends Events.Simple.Emitter {
     this.emit('space.init.end')
   }
 
-  // 切换场景
+  /**
+   * 切换场景
+   * @param {string} [sceneId=this.currentSceneId] - 目标场景 ID
+   * @returns {Promise<void>}
+   */
   async switchScene(sceneId = this.currentSceneId) {
     this.emit(SPACE_EVENT_NAME_ENUM.SCENE.SWITCH_START, sceneId)
     this.currentSceneId = sceneId
@@ -121,7 +165,7 @@ export class Space extends Events.Simple.Emitter {
 
     qspace.core.initData(this.coreData)
     qspace.core.beginRender({
-      onProgress: (data) => {
+      onProgress: data => {
         // 加载进度
         console.log('on core progress:', data)
       },
@@ -152,23 +196,24 @@ export class Space extends Events.Simple.Emitter {
     })
   }
 
-  // 监听 qspace 中的事件，并用过 Space 派发，可在 vue 中监听
+  /**
+   * 监听 qspace 中的事件，并通过 Space 派发，可在 vue 中监听
+   */
   eventListen() {
     this.qspace.view.addEventListener(
       SDK_EVENT_NAME_ENUM.VIEW.MODE_CHANGE,
-      (mode) => this.emit(SPACE_EVENT_NAME_ENUM.VIEW.MODE_CHANGE, mode)
+      mode => this.emit(SPACE_EVENT_NAME_ENUM.VIEW.MODE_CHANGE, mode)
     )
-    this.qspace.panoramaCamera.addEventListener('rotation', (info) =>
+    this.qspace.panoramaCamera.addEventListener('rotation', info =>
       this.emit(SPACE_EVENT_NAME_ENUM.PANORAMA_CAMERA_ROTATION, info)
     )
     this.qspace.model.addEventListener(
       SDK_EVENT_NAME_ENUM.MODEL.SWITCH_WAYPOINT_START,
-      (info) =>
-        this.emit(SPACE_EVENT_NAME_ENUM.MODEL.SWITCH_WAYPOINT_START, info)
+      info => this.emit(SPACE_EVENT_NAME_ENUM.MODEL.SWITCH_WAYPOINT_START, info)
     )
     this.qspace.model.addEventListener(
       SDK_EVENT_NAME_ENUM.MODEL.SWITCH_WAYPOINT_COMPLETE,
-      (info) =>
+      info =>
         this.emit(SPACE_EVENT_NAME_ENUM.MODEL.SWITCH_WAYPOINT_COMPLETE, info)
     )
     this.qspace.model.addEventListener('switch.floor.complete', () => {
@@ -208,12 +253,18 @@ export class Space extends Events.Simple.Emitter {
     )
   }
 
-  // 多层模型切换楼层
+  /**
+   * 多层模型切换楼层
+   * @param {number} idx - 楼层索引
+   */
   switchFloor(idx) {
     this.feature.floor.switchFloor(idx)
   }
 
-  // 切换 漫游、三维、平面 模式
+  /**
+   * 切换视图模式
+   * @param {string} name - 视图模式名称：漫游、三维、平面
+   */
   turnViewTo(name) {
     this.feature.view.turnTo(name)
   }

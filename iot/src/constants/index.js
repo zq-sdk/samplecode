@@ -1,3 +1,3 @@
 export * from './eventEnum'
 export * from './featureEnum'
-export * from './deviceEnum'
+export * from './iotEnum'

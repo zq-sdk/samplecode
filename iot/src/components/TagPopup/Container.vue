@@ -43,9 +43,9 @@ const {
       </span>
       <button
         class="tag-popup__close"
-        @click="close"
         type="button"
         aria-label="关闭"
+        @click="close"
       ></button>
     </header>
 

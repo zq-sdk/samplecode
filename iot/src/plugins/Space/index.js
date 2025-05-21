@@ -1,9 +1,10 @@
-import { Space } from './descriptor.js';
+import { Space } from './descriptor.js'
 
-export default {
-	install: (app, options) => {
-		const space = new Space(app);
+const spaceVueCustomPlugin = {
+  install(app, _options) {
+    const space = new Space(app)
+    app.provide('space', space)
+  },
+}
 
-		app.provide('space', space);
-	}
-};
+export default spaceVueCustomPlugin

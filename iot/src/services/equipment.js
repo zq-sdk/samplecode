@@ -1,5 +1,6 @@
 import Mock from 'mockjs'
-import { DEVICE_STATE_ENUM } from '../constants/deviceEnum'
+import { DEVICE_STATE_ENUM } from '@/constants'
+import logger from '@/utils/logger'
 
 // 设备数据阈值配置
 const EQUIPMENT_THRESHOLDS = {
@@ -90,43 +91,71 @@ export class EquipmentService {
    * @param {number} interval 更新间隔 (ms)
    */
   startGlobalUpdate(deviceList, interval = 2000) {
-    // 缓存设备列表
-    if (deviceList && deviceList.length > 0) {
-      this.deviceListCache = deviceList
-    }
+    try {
+      // 输入参数验证
+      if (deviceList && !Array.isArray(deviceList)) {
+        logger.error('startGlobalUpdate: deviceList 必须是数组', { deviceList })
+        return
+      }
 
-    // 设置全局更新频率
-    if (interval) {
-      this.globalUpdateFrequency = interval
-    }
+      if (interval && (typeof interval !== 'number' || interval <= 0)) {
+        logger.error('startGlobalUpdate: interval 必须是正数', { interval })
+        return
+      }
 
-    // 如果已经启动，不重复启动
-    if (this.isGlobalUpdateRunning()) {
-      return
-    }
+      // 缓存设备列表
+      if (deviceList && deviceList.length > 0) {
+        this.deviceListCache = deviceList
+        logger.debug('设备列表已缓存', { deviceCount: deviceList.length })
+      }
 
-    // 标记为已初始化
-    this.isGlobalUpdateInitialized = true
+      // 设置全局更新频率
+      if (interval) {
+        this.globalUpdateFrequency = interval
+      }
 
-    // 立即更新一次所有设备状态
-    this.fetchAllDeviceData()
+      // 如果已经启动，不重复启动
+      if (this.isGlobalUpdateRunning()) {
+        logger.warn('全局状态更新已在运行，跳过重复启动')
+        return
+      }
 
-    // 设置定时更新
-    this.globalUpdateInterval = window.setInterval(() => {
+      // 标记为已初始化
+      this.isGlobalUpdateInitialized = true
+
+      // 立即更新一次所有设备状态
       this.fetchAllDeviceData()
-    }, this.globalUpdateFrequency)
 
-    console.log(`全局状态更新已启动，更新频率: ${this.globalUpdateFrequency}ms`)
+      // 设置定时更新
+      this.globalUpdateInterval = window.setInterval(() => {
+        this.fetchAllDeviceData()
+      }, this.globalUpdateFrequency)
+
+      logger.info(
+        `全局状态更新已启动，更新频率: ${this.globalUpdateFrequency}ms`
+      )
+    } catch (error) {
+      logger.error('启动全局状态更新时发生错误', {
+        error: error.message,
+        stack: error.stack,
+      })
+    }
   }
 
   /**
    * 停止全局状态更新
    */
   stopGlobalUpdate() {
-    if (this.globalUpdateInterval) {
-      window.clearInterval(this.globalUpdateInterval)
-      this.globalUpdateInterval = null
-      console.log('全局状态更新已停止')
+    try {
+      if (this.globalUpdateInterval) {
+        window.clearInterval(this.globalUpdateInterval)
+        this.globalUpdateInterval = null
+        logger.info('全局状态更新已停止')
+      } else {
+        logger.debug('全局状态更新未运行，无需停止')
+      }
+    } catch (error) {
+      logger.error('停止全局状态更新时发生错误', { error: error.message })
     }
   }
 
@@ -155,7 +184,7 @@ export class EquipmentService {
     let hasAlert = false
 
     // 检查每个字段是否超出阈值
-    Object.keys(EQUIPMENT_THRESHOLDS).forEach((key) => {
+    Object.keys(EQUIPMENT_THRESHOLDS).forEach(key => {
       const value = data[key]
       const threshold = EQUIPMENT_THRESHOLDS[key]
 
@@ -166,7 +195,7 @@ export class EquipmentService {
       }
     })
 
-    hasAlert = Object.values(alerts).some((alert) => alert)
+    hasAlert = Object.values(alerts).some(alert => alert)
 
     return {
       alerts,
@@ -193,23 +222,64 @@ export class EquipmentService {
   }
 
   async fetchAllDeviceData() {
-    const deviceIds = this.deviceListCache.map((device) => device.deviceId)
+    // 边界情况处理
+    if (!this.deviceListCache || this.deviceListCache.length === 0) {
+      logger.debug('设备列表为空，跳过数据获取')
+      return []
+    }
+
     try {
+      // 提取设备ID
+      const deviceIds = []
+      for (const device of this.deviceListCache) {
+        if (device?.iotData?.deviceId) {
+          deviceIds.push(device.iotData.deviceId)
+        } else {
+          logger.warn('设备数据格式错误，跳过', { device })
+        }
+      }
+
+      if (deviceIds.length === 0) {
+        logger.warn('没有有效的设备ID，跳过数据获取')
+        return []
+      }
+
+      logger.debug('开始批量获取设备数据', { deviceCount: deviceIds.length })
+
       // 并行请求所有设备数据
-      const promises = deviceIds.map((id) => this.fetchDeviceData(id))
+      const promises = deviceIds.map(id => this.fetchDeviceData(id))
       const results = await Promise.allSettled(promises)
 
       // 处理结果
+      let successCount = 0
+      let failureCount = 0
+
       results.forEach((result, index) => {
         const deviceId = deviceIds[index]
         if (result.status === 'rejected') {
-          console.error(`设备 ${deviceId} 数据获取失败:`, result.reason)
+          failureCount++
+          logger.error(`设备 ${deviceId} 数据获取失败`, {
+            deviceId,
+            error: result.reason?.message || result.reason,
+          })
+        } else {
+          successCount++
         }
       })
 
-      return results.filter((r) => r.status === 'fulfilled').map((r) => r.value)
+      logger.debug('批量获取设备数据完成', {
+        total: deviceIds.length,
+        success: successCount,
+        failure: failureCount,
+      })
+
+      return results.filter(r => r.status === 'fulfilled').map(r => r.value)
     } catch (error) {
-      console.error('批量获取设备数据失败:', error)
+      logger.error('批量获取设备数据失败', {
+        error: error.message,
+        stack: error.stack,
+        deviceCacheLength: this.deviceListCache?.length || 0,
+      })
       throw error
     }
   }
@@ -238,13 +308,13 @@ export class EquipmentService {
 
       const cbs = this.deviceDataListeners.get(deviceId)
       if (cbs && cbs.size > 0) {
-        cbs.forEach((cb) => {
+        cbs.forEach(cb => {
           cb(data)
         })
       }
 
       return data
-    } catch (error) {
+    } catch {
       // 模拟设备数据请求
       const mockData = await this.getMockData()
 
@@ -265,7 +335,7 @@ export class EquipmentService {
 
       const cbs = this.deviceDataListeners.get(deviceId)
       if (cbs && cbs.size > 0) {
-        cbs.forEach((cb) => {
+        cbs.forEach(cb => {
           cb(mockData)
         })
       }
@@ -302,7 +372,9 @@ export class EquipmentService {
    */
   unregisterDeviceDataUpdate(equipmentId, listener) {
     const listeners = this.deviceDataListeners.get(equipmentId)
-    if (!listeners || !listeners.size) return
+    if (!listeners || !listeners.size) {
+      return
+    }
 
     listeners.delete(listener)
   }
@@ -322,12 +394,16 @@ export class EquipmentService {
    * @param {number} state 状态值
    */
   updateDeviceState(deviceId, state) {
+    const preState = this.getDeviceState(deviceId)
     this.deviceStates[deviceId] = state
 
     // console.error(`${deviceId}, 状态更新为：${DEVICE_STATE_DESC[state]}`)
     // console.log(`alerts: `, this.deviceAlerts[deviceId])
     // console.log(`deviceData: `, this.deviceData[deviceId])
     // console.log('------------------------------')
+    if (preState === state) {
+      return
+    }
     this.notifyStateChange(deviceId, state)
   }
 
@@ -336,7 +412,9 @@ export class EquipmentService {
    * @param {string} deviceId 设备列表
    */
   updateTargetDeviceState(deviceId, deviceData) {
-    if (!deviceId) return
+    if (!deviceId) {
+      return
+    }
 
     const finalDeviceData = this.deviceData[deviceId] ?? deviceData
 
@@ -374,7 +452,7 @@ export class EquipmentService {
    * @param {number} state 状态值
    */
   notifyStateChange(deviceId, state) {
-    this.stateChangeListeners.forEach((listener) => {
+    this.stateChangeListeners.forEach(listener => {
       try {
         listener(deviceId, state)
       } catch (error) {

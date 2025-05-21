@@ -1,6 +1,6 @@
 <script setup>
 import { ref, computed, inject, onMounted, onBeforeUnmount } from 'vue'
-import { DEVICE_STATE_ENUM, DEVICE_STATE_DESC } from '../constants/deviceEnum'
+import { DEVICE_STATE_ENUM, DEVICE_STATE_DESC } from '@/constants'
 import { equipmentService } from '../services/equipment'
 import { videoService } from '../services/video'
 import {
@@ -24,25 +24,27 @@ const filteredTagList = computed(() => {
 })
 
 // 获取设备状态描述
-const getDeviceStateDesc = (deviceId) => {
+const getDeviceStateDesc = deviceId => {
   const state = equipmentService.getDeviceState(deviceId)
   return DEVICE_STATE_DESC[state]
 }
 
 // 获取状态对应的类名
-const getStateClassName = computed(() => (deviceId) => {
+const getStateClassName = computed(() => deviceId => {
   const state =
     deviceStates.value[deviceId] || equipmentService.getDeviceState(deviceId)
   return state === DEVICE_STATE_ENUM.NORMAL ? 'state-normal' : 'state-error'
 })
 
-const handleListClick = async (event) => {
+const handleListClick = async event => {
   const tagItem = event.target.closest('.tag-item')
-  if (!tagItem) return
+  if (!tagItem) {
+    return
+  }
 
   const { type, id } = tagItem.dataset
   const tagList = filteredTagList.value[type]
-  const clickedTag = tagList.find((tag) => tag.id === id)
+  const clickedTag = tagList.find(tag => tag.id === id)
 
   if (clickedTag) {
     console.log('标签被点击：', { type, tag: clickedTag })
@@ -59,7 +61,7 @@ const handleListClick = async (event) => {
   }
 }
 
-const handleTagHover = (tag) => {
+const handleTagHover = tag => {
   hoveredTag.value = tag
 }
 
@@ -101,7 +103,7 @@ onBeforeUnmount(() => {
           class="tag-item"
           :class="{
             'tag-hovered': hoveredTag === tag,
-            [getStateClassName(tag.deviceId)]: type === 'iot',
+            [getStateClassName(tag.iotData.deviceId)]: type === 'iot',
           }"
           :data-type="type"
           :data-id="tag.id"
@@ -110,24 +112,27 @@ onBeforeUnmount(() => {
         >
           <div class="tag-content">
             <span class="tag-icon">{{ type === 'iot' ? '🔌' : '📷' }}</span>
-            <span class="tag-name">{{ tag.name }}</span>
+            <span class="tag-name">{{ tag.content.title_info.text }}</span>
             <span
               v-if="type === 'iot'"
               class="tag-state-indicator"
-              :class="getStateClassName(tag.deviceId)"
+              :class="getStateClassName(tag.iotData.deviceId)"
             ></span>
           </div>
           <div class="tag-info">
             <template v-if="type === 'camera'">
               <span class="tag-mode"
-                >模式: {{ tag.mode === 0 ? '点播' : '直播' }}</span
+                >模式: {{ tag.iotData.mode === 0 ? '点播' : '直播' }}</span
               >
             </template>
             <template v-else>
-              <span class="tag-state" :class="getStateClassName(tag.deviceId)">
-                状态: {{ getDeviceStateDesc(tag.deviceId) }}
+              <span
+                class="tag-state"
+                :class="getStateClassName(tag.iotData.deviceId)"
+              >
+                状态: {{ getDeviceStateDesc(tag.iotData.deviceId) }}
               </span>
-              <span class="tag-device-id">ID: {{ tag.deviceId }}</span>
+              <span class="tag-device-id">ID: {{ tag.iotData.deviceId }}</span>
             </template>
           </div>
         </li>

@@ -27,16 +27,28 @@ export class Put2DContent {
 
     this.qspace.extension.mount(put2d, () => {})
 
-    put2d.addEventListener(SDK_EVENT_NAME_ENUM.PUT_2D.CLICK, (data) => {
+    put2d.addEventListener(SDK_EVENT_NAME_ENUM.PUT_2D.CLICK, data => {
       console.log(`点击 2D 物品->data`, data)
     })
 
-    put2d.addEventListener(SDK_EVENT_NAME_ENUM.PUT_2D.HOVER, (data) => {
+    put2d.addEventListener(SDK_EVENT_NAME_ENUM.PUT_2D.HOVER, data => {
       console.log(`鼠标移入 2D 物品->data`, data)
     })
 
-    put2d.addEventListener(SDK_EVENT_NAME_ENUM.PUT_2D.HOVER_OUT, (data) => {
+    put2d.addEventListener(SDK_EVENT_NAME_ENUM.PUT_2D.HOVER_OUT, data => {
       console.log(`鼠标移出 2D 物品->data`, data)
+    })
+
+    put2d.addEventListener('control.drag.start', data => {
+      console.log('put2d: control.drag.start', data)
+      this.qspace.model.disableSwitchWaypoint()
+      this.qspace.panoramaCamera.disableControl()
+    })
+
+    put2d.addEventListener('control.drag.end', data => {
+      console.log('put2d: control.drag.end', data)
+      this.qspace.model.enableSwitchWaypoint()
+      this.qspace.panoramaCamera.enableControl()
     })
   }
 }
