@@ -2,7 +2,6 @@
 import { SPACE_EVENT_NAME_ENUM } from '@/constants'
 import { inject, defineOptions, ref } from 'vue'
 
-
 defineOptions({
   name: 'ViewModeSwitchContainer',
 })
@@ -20,10 +19,10 @@ space.on('measure.quit', () => (isEnterMeasure.value = false))
 space.on('space.switch.scene.end', () => (viewMode.value = space.viewMode))
 space.on(
   SPACE_EVENT_NAME_ENUM.VIEW.MODE_CHANGE,
-  (mode) => (viewMode.value = mode)
+  mode => (viewMode.value = mode)
 )
 
-const changeViewMode = (mode) => space.turnViewTo(mode)
+const changeViewMode = mode => space.turnViewTo(mode)
 </script>
 
 <template>

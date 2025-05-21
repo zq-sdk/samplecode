@@ -101,8 +101,8 @@ export class CanvasManager {
 
     Object.entries(iconConfigs).forEach(([key, config]) => {
       fetch(config.path)
-        .then((response) => response.text())
-        .then((svgText) => {
+        .then(response => response.text())
+        .then(svgText => {
           // 创建一个临时的 div 来解析 SVG
           const div = document.createElement('div')
           div.innerHTML = svgText
@@ -112,7 +112,7 @@ export class CanvasManager {
           if (svg) {
             // 修改 SVG 的 fill 和 stroke 属性
             const paths = svg.querySelectorAll('path')
-            paths.forEach((path) => {
+            paths.forEach(path => {
               if (path.getAttribute('fill') === 'currentColor') {
                 path.setAttribute('fill', config.color)
               }
@@ -161,7 +161,7 @@ export class CanvasManager {
     this.deviceId = deviceId
 
     // 注册设备数据更新回调
-    equipmentService.registerDeviceDataUpdate(deviceId, (data) =>
+    equipmentService.registerDeviceDataUpdate(deviceId, data =>
       this.updateData(data)
     )
   }
@@ -183,7 +183,9 @@ export class CanvasManager {
    * 渲染 Canvas 内容
    */
   render() {
-    if (!this.ctx || !this.data) return
+    if (!this.ctx || !this.data) {
+      return
+    }
 
     // 清空画布
     this.ctx.clearRect(0, 0, this.width, this.height)
@@ -214,7 +216,9 @@ export class CanvasManager {
    * 渲染设备数据
    */
   renderDeviceData() {
-    if (!this.data) return
+    if (!this.data) {
+      return
+    }
 
     const startX = 30
     const startY = 120 // 调整起始Y坐标，为标题留出空间

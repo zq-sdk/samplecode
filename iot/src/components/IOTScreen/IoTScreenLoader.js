@@ -1,7 +1,8 @@
 /**
- *  IOT 大屏渲染类 —— canvas模式
+ *  IOT 大屏加载类
  */
-export class CanvasScreenLoader {
+import { DEVICE_DATA_DISPLAY_TYPE_ENUM, DEVICE_DATA_DISPLAY_TYPE_VALUE } from '@/constants/iotEnum'
+export class IoTScreenLoader {
   constructor(put2D) {
     this.put2D = put2D
     this.screenMap = new Map()
@@ -10,8 +11,9 @@ export class CanvasScreenLoader {
   /**
    * 大屏加载参数类型
    * @typedef {Object} ScreenLoadParam
-   * @property {HTMLCanvasElement} canvas Canvas元素
+   * @property {HTMLCanvasElement | HTMLElement} element Canvas元素
    * @property {number} width 宽度
+   * @property {DEVICE_DATA_DISPLAY_TYPE_ENUM} displayType 大屏类型
    * @property {number} height 高度
    * @property {Object} position 位置
    * @property {Object} quaternion 旋转
@@ -30,11 +32,12 @@ export class CanvasScreenLoader {
       throw new Error('options must be an array')
     }
 
-    const loadParams = params.map((option) => {
+    const loadParams = params.map(option => {
       const {
-        canvas,
+        element,
         width,
         height,
+        displayType,
         position,
         quaternion,
         scale,
@@ -54,14 +57,14 @@ export class CanvasScreenLoader {
         material_list: [
           {
             id,
-            type: 'canvas',
-            canvas,
+            type: DEVICE_DATA_DISPLAY_TYPE_VALUE[displayType],
           },
         ],
         scale,
         position,
         quaternion,
-        success: (data) => {
+        visible: true,
+        success: data => {
           this.screenMap.set(id, data)
           onSuccess && onSuccess(data)
         },
@@ -69,13 +72,17 @@ export class CanvasScreenLoader {
           onFailure && onFailure()
         },
       }
-
+      if (displayType === DEVICE_DATA_DISPLAY_TYPE_ENUM.CANVAS) {
+        screenConfig.material_list[0].canvas = element
+      } else {
+        screenConfig.material_list[0].element = element
+      }
       return screenConfig
     })
 
     this.put2D.load({
       data: loadParams,
-      complete: (results) => {
+      complete: results => {
         onLoadComplete && onLoadComplete(results)
       },
     })

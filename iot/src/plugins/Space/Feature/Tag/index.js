@@ -103,20 +103,17 @@ export class Tag {
 
     // 鼠标在标签头上，禁用点位切换，防止点击时触发多个事件
     // 也可用同样方式处理标签标题
-    hotspotTag.addEventListener(SDK_EVENT_NAME_ENUM.TAG.HEAD_HOVER, (tag) => {
+    hotspotTag.addEventListener(SDK_EVENT_NAME_ENUM.TAG.HEAD_HOVER, _tag => {
       this.space.feature.waypoint.disableSwitch()
     })
 
     // 鼠标移出标签头，恢复点位切换
-    hotspotTag.addEventListener(
-      SDK_EVENT_NAME_ENUM.TAG.HEAD_HOVEROUT,
-      (tag) => {
-        this.space.feature.waypoint.enableSwitch()
-      }
-    )
+    hotspotTag.addEventListener(SDK_EVENT_NAME_ENUM.TAG.HEAD_HOVEROUT, _tag => {
+      this.space.feature.waypoint.enableSwitch()
+    })
 
     // 点击标签头
-    hotspotTag.addEventListener(SDK_EVENT_NAME_ENUM.TAG.HEAD_CLICK, (tag) => {
+    hotspotTag.addEventListener(SDK_EVENT_NAME_ENUM.TAG.HEAD_CLICK, tag => {
       console.log(`output->tag`, tag)
       // 获取标签业务数据信息
       const tagInfo = this.getHotspotTagInfo(tag.id)
@@ -141,14 +138,23 @@ export class Tag {
     // 目前平面模式未显示标签
     this.qspace.view.addEventListener(
       SDK_EVENT_NAME_ENUM.VIEW.MODE_CHANGE,
-      (mode) => {
-        if (['panorama', 'dollhouse'].includes(mode)) this.computeTagVisible()
-        if (mode === 'floorplan') this.hideAll()
+      mode => {
+        if (['panorama', 'dollhouse'].includes(mode)) {
+          this.computeTagVisible()
+        }
+        if (mode === 'floorplan') {
+          this.hideAll()
+        }
       }
     )
 
     this.qspace.model.addEventListener(
       SDK_EVENT_NAME_ENUM.MODEL.SWITCH_WAYPOINT_COMPLETE,
+      () => this.computeTagVisible()
+    )
+
+    this.qspace.model.addEventListener(
+      SDK_EVENT_NAME_ENUM.MODEL.SWITCH_WAYPOINT_TRANSITION,
       () => this.computeTagVisible()
     )
 
@@ -241,7 +247,7 @@ export class Tag {
   // 设置标签数据
   setData(data) {
     this.tagData = data
-    data.forEach((tag) => (this.tagIdToData[tag.id] = tag))
+    data.forEach(tag => (this.tagIdToData[tag.id] = tag))
   }
 
   // 获取标签数据
@@ -251,13 +257,16 @@ export class Tag {
 
   // 更新热点标签
   update() {
-    if (!this.tagData) return
+    if (!this.tagData) {
+      return
+    }
 
     const { hotspotTag } = this.plugin
 
     hotspotTag.load({
       data: this.tagData,
       success: () => {
+        // hotspotTag.setVisualRange(5)
         this.computeTagVisible()
 
         // hotspotTag.getAllData().forEach(t => this.tagRenderDataMap.set())
@@ -268,12 +277,14 @@ export class Tag {
 
   showTag(uuid) {
     this.plugin.hotspotTag.show(uuid)
-    this.plugin.hotspotTag.showTitle(uuid)
+    this.plugin.hotspotTag.hasTitle(uuid) &&
+      this.plugin.hotspotTag.showTitle(uuid)
   }
 
   hideTag(uuid) {
     this.plugin.hotspotTag.hide(uuid)
-    this.plugin.hotspotTag.hideTitle(uuid)
+    this.plugin.hotspotTag.hasTitle(uuid) &&
+      this.plugin.hotspotTag.hideTitle(uuid)
   }
 
   computeTagVisible(ruleList) {
@@ -282,7 +293,9 @@ export class Tag {
     const tagList = hotspotTag.getAllData()
     const modeVisibleParam = modeVisibleParamMap[this.space.viewMode]
 
-    if (!modeVisibleParam) return
+    if (!modeVisibleParam) {
+      return
+    }
 
     const TAG_VISIBLE_HANDLER_MAP = {
       [TAG_VISIBLE_COMPUTE_RULE_ENUM.OUT_VISUAL_RANGE]:
@@ -293,7 +306,7 @@ export class Tag {
         this.middleComputeBarrierWithinModel,
     }
 
-    tagList.forEach((tag) => {
+    tagList.forEach(tag => {
       const { id, uuid } = tag
       const tagInfo = this.getHotspotTagInfo(id)
 
@@ -331,9 +344,7 @@ export class Tag {
   getHotspotTagInfo(tagId) {
     const { currentSceneId } = this.space
     const tagSourceList = dataCenter.getHotspotTagSourceList(currentSceneId)
-    const info = tagSourceList.find(
-      (tagSourceItem) => tagSourceItem.id === tagId
-    )
+    const info = tagSourceList.find(tagSourceItem => tagSourceItem.id === tagId)
 
     // 内容信息
     // info.content.text.content
@@ -349,7 +360,9 @@ export class Tag {
   showAll() {
     const { hotspotTag } = this.plugin
 
-    if (!hotspotTag) return
+    if (!hotspotTag) {
+      return
+    }
 
     hotspotTag.getAllData().forEach((tag, index) => {
       if (this.tagData[index].visible) {
@@ -362,18 +375,22 @@ export class Tag {
   hideAll() {
     const { hotspotTag } = this.plugin
 
-    if (!hotspotTag) return
+    if (!hotspotTag) {
+      return
+    }
 
-    hotspotTag.getAllData().forEach((tag) => hotspotTag.hide(tag.uuid))
+    hotspotTag.getAllData().forEach(tag => hotspotTag.hide(tag.uuid))
   }
 
   // 移出当前加载的所有标签
   removeAll() {
     const { hotspotTag } = this.plugin
 
-    if (!hotspotTag) return
+    if (!hotspotTag) {
+      return
+    }
 
-    hotspotTag.getAllData().forEach((tag) => hotspotTag.del(tag.uuid))
+    hotspotTag.getAllData().forEach(tag => hotspotTag.del(tag.uuid))
   }
 
   /* 飞向标签 */
@@ -432,7 +449,7 @@ export class Tag {
             type: getTagIotType(id),
           })
 
-          if (!!onComplete) {
+          if (onComplete) {
             await onComplete()
           }
         },
@@ -454,7 +471,7 @@ export class Tag {
             type: getTagIotType(id),
           })
 
-          if (!!onComplete) {
+          if (onComplete) {
             await onComplete()
           }
         },
@@ -463,7 +480,7 @@ export class Tag {
   }
 
   /** 计算标签是否在可视范围 */
-  middleComputeHeadIsOutVisualRange = (uuid) => {
+  middleComputeHeadIsOutVisualRange = uuid => {
     // 全景图，可视范围不可以生效，固定未超出可视范围
     if (this.qspace.model.type === 'purepano') {
       return false
@@ -473,11 +490,11 @@ export class Tag {
   }
 
   /** 计算标签是否被模型遮挡 */
-  middleComputeHeadIsOutCamera = (uuid) => {
+  middleComputeHeadIsOutCamera = uuid => {
     return this.plugin.hotspotTag.computeHeadIsOutCamera(uuid)
   }
   /** 计算标签是否被模型遮挡 */
-  middleComputeBarrierWithinModel = (uuid) => {
+  middleComputeBarrierWithinModel = uuid => {
     return this.plugin.hotspotTag.computeHeadIsBarrierWithinModel(uuid)
   }
 }

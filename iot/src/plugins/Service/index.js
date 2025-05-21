@@ -1,13 +1,11 @@
-import { OfflineService } from './offline.js';
+import { OfflineService } from './offline.js'
 
-const offlineServer = new OfflineService();
+const offlineServer = new OfflineService()
 
 export default {
-	install: (app, options) => {
-		app.provide('offlineServer', offlineServer);
-	}
-};
+  install: (app, _options) => {
+    app.provide('offlineServer', offlineServer)
+  },
+}
 
-export {
-	offlineServer,
-};
+export { offlineServer }

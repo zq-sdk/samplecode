@@ -12,33 +12,41 @@
 - mockjs 1.1.0
 - echarts 5.6.0
 - aliyun-aliplayer 2.8.2
+- element-plus 2.9.10
 
 ## 项目结构
 
-```
+```md
 iot/
 ├── src/
 │ ├── components/
-│ │ ├── IOTScreen/                # IoT 大屏组件
-│ │ │ ├── iotScreenDashboard.js   # 大屏仪表盘创建
-│ │ │ ├── iotScreenText.js        # 大屏文本创建
-│ │ │ ├── Canvas/                 # Canvas 渲染模式实现
-│ │ │ └── CSS3D/                  # CSS3D 渲染模式实现
-│ │ ├── TagPopup/                 # 标签弹窗组件
+│ │ ├── IOTScreen/                # IoT 数字大屏组件，用于在空间中以面板的形式展示设备数据
+│ │ │ ├── iotScreenDashboard.js   # CSS3D 模式仪表盘创建逻辑
+│ │ │ ├── iotScreenText.js        # Canvas 模式文本大屏创建逻辑
+│ │ │ ├── IoTScreenLoader.js      # 大屏加载器
+│ │ │ ├── Canvas/                 # Canvas 渲染模式相关实现
+│ │ │ │ └── CanvasManager.js      # 数据展示的Canvas 具体实现
+│ │ │ └── CSS3D/                  # CSS3D 渲染模式相关实现
+│ │ │ │ └── DashboardManager.js   # 数据展示的CSS3D 具体实现
+│ │ ├── TagPopup/                 # 点击热点标签后显示的弹窗组件，展示设备详情和告警
+│ │ ├── TagSearch/                # 热点标签搜索及看板组件
+│ │ ├── SceneContainer.vue        # 场景容器，负责初始化空间、加载模型、初始化设备服务等
+│ │ ├── SceneTagList.vue          # 场景标签列表组件（可能已废弃或备用，SceneContainer 中被注释）
 │ │ └── ViewModeSwitch/           # 视图模式切换组件
-│ ├── constants/                  # 常量、枚举定义
-│ ├── hooks/                      # 全局 hooks
+│ ├── constants/                  # 定义项目中的常量和枚举，如设备状态、IoT 类型、显示方式等
+│ ├── hooks/                      # 全局或通用的 Vue Composition API hooks
 │ ├── plugins/
-│ │ ├── Space/
-│ │ │ ├── DataCenter/
+│ │ ├── Space/                    # qspace SDK 集成相关
+│ │ │ ├── DataCenter/             # 数据中心，负责解析和管理场景数据
 │ │ │ │ ├── offline.js     # 离线作品数据解析
-│ │ │ │ └── iot.js         # iot 绑定数据解析
-│ │ │ ├── descriptor.js    # 空间能力集成类
-│ │ │ └── Feature/         # 特性能力封装(热点标签插件、2D 物品摆放插件、视角、相机操作等)
-│ ├── services/
-│ │ ├── equipment.js       # 设备服务实现
-│ │ └── video.js           # 视频服务实现
-└── .env.offline           # 离线模式环境配置
+│ │ │ │ └── iot.js         # IoT 相关的标签和 2D 物品数据解析及映射建立
+│ │ │ ├── descriptor.js    # 空间能力集成类定义
+│ │ │ └── Feature/         # 封装 qspace 的特性能力
+│ │ │     └── Tag/         # 热点标签功能封装，集成 HotspotTag 插件
+│ ├── services/            # 业务服务层
+│ │ ├── equipment.js       # 设备服务，负责设备数据获取、状态监听、告警处理等
+│ │ └── video.js           # 视频服务，用于摄像头视频播放
+└── .env.offline           # 离线模式环境配置文件
 
 ```
 

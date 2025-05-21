@@ -1,5 +1,9 @@
 import { inject, ref, onBeforeUnmount, watch, computed } from 'vue'
-import { DEVICE_STATE_ENUM, SPACE_EVENT_NAME_ENUM } from '@/constants'
+import {
+  DEVICE_STATE_ENUM,
+  IOT_TYPE_ENUM,
+  SPACE_EVENT_NAME_ENUM,
+} from '@/constants'
 import {
   equipmentService,
   EQUIPMENT_THRESHOLDS_CONFIG,
@@ -39,7 +43,7 @@ export function useTagPopup() {
 
   // 计算告警字段数量
   const alertCount = computed(() => {
-    return Object.values(equipmentAlerts.value).filter((v) => v).length
+    return Object.values(equipmentAlerts.value).filter(v => v).length
   })
 
   // 监听告警数量变化
@@ -62,19 +66,23 @@ export function useTagPopup() {
   }
 
   // 更新设备数据
-  const updateEquipmentData = (data) => {
+  const updateEquipmentData = data => {
     equipmentData.value = data
   }
 
   // 获取字段的阈值提示
-  const getThresholdTip = (field) => {
-    if (!EQUIPMENT_THRESHOLDS_CONFIG[field]) return ''
+  const getThresholdTip = field => {
+    if (!EQUIPMENT_THRESHOLDS_CONFIG[field]) {
+      return ''
+    }
     const { min, max, unit } = EQUIPMENT_THRESHOLDS_CONFIG[field]
     return `阈值范围: ${min}-${max}${unit}`
   }
 
   const updatePosition = () => {
-    if (!currentTag.value) return
+    if (!currentTag.value) {
+      return
+    }
 
     const { x, y } = space.qspace.sceneCamera.convertWorldPositionToScreen(
       currentTag.value.position
@@ -106,7 +114,7 @@ export function useTagPopup() {
   }
 
   // 设置设备监听器
-  const setupDeviceListeners = (deviceId) => {
+  const setupDeviceListeners = deviceId => {
     if (!deviceId) {
       console.error(`deviceId is needed!`)
       return
@@ -149,7 +157,9 @@ export function useTagPopup() {
       console.log(`output->renderedTag`, renderedTag)
       console.log(`Container.vue output->deviceId`, deviceId)
 
-      if (type === 'camera') return
+      if (type !== IOT_TYPE_ENUM.IOT) {
+        return
+      }
 
       updatePosition()
       setupDeviceListeners(deviceId)

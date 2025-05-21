@@ -1,10 +1,10 @@
 <script setup>
 import ViewModeSwitch from './ViewModeSwitch/Container.vue'
 import TagPopup from './TagPopup/Container.vue'
-import SceneTagList from './SceneTagList.vue'
 import VideoPlayer from './VideoPlayer/VideoPlayer.vue'
+import TagSearchKanban from './TagSearch/TagSearchKanban.vue'
 import { useSceneLoading } from '../hooks/useSceneLoading'
-import { inject, onMounted, onBeforeUnmount, watch, computed } from 'vue'
+import { onBeforeUnmount, watch, computed } from 'vue'
 import dataCenter from '../plugins/Space/DataCenter/offline'
 import { equipmentService } from '../services/equipment'
 import { videoService } from '../services/video'
@@ -38,7 +38,7 @@ onMounted(async () => {
   if (isModelLoaded.value) {
     await initializeDeviceService()
   } else {
-    const stopWatch = watch(isModelLoaded, async (loaded) => {
+    const stopWatch = watch(isModelLoaded, async loaded => {
       if (loaded) {
         await initializeDeviceService()
         stopWatch()
@@ -63,13 +63,16 @@ const initializeDeviceService = async () => {
 
   console.log('设备服务已初始化，设备数量:', deviceList.length)
 
-  put2dDeviceList.forEach((deviceData) => {
+  put2dDeviceList.forEach(deviceData => {
     if (deviceData.mode === DEVICE_DATA_DISPLAY_TYPE_ENUM.CANVAS) {
       createIotTextScreen(space.feature.put2dContent.plugin.put2d, deviceData)
     }
 
     if (deviceData.mode === DEVICE_DATA_DISPLAY_TYPE_ENUM.CSS3D) {
-      createIotDashboardScreen(deviceData)
+      createIotDashboardScreen(
+        space.feature.put2dContent.plugin.put2d,
+        deviceData
+      )
     }
   })
 }
@@ -80,8 +83,7 @@ const initializeDeviceService = async () => {
     <template v-if="isModelLoaded">
       <ViewModeSwitch />
       <TagPopup />
-      <SceneTagList />
-
+      <TagSearchKanban />
       <!-- 视频播放器组件 -->
       <VideoPlayer
         :visible="isVideoVisible"

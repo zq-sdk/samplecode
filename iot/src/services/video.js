@@ -37,10 +37,10 @@ const hideVideo = () => {
 
 /**
  * 获取视频信息
- * @param {string} cameraId - 摄像头ID
+ * @param {string} _cameraId - 摄像头ID
  * @returns {Promise<{success: boolean, url?: string, error?: string}>} 视频信息
  */
-const fetchVideoInfo = async (cameraId) => {
+const fetchVideoInfo = async _cameraId => {
   try {
     // 发起API请求获取视频信息
     const response = await fetch(`https://kvs.3dnest.cn/getMediaInfo`)

@@ -1,5 +1,6 @@
 import { CanvasManager } from '@/components/IOTScreen/Canvas/CanvasManager'
-import { CanvasScreenLoader } from '@/components/IOTScreen/Canvas/CanvasScreenLoader'
+import { IoTScreenLoader } from './IoTScreenLoader'
+import { DEVICE_DATA_DISPLAY_TYPE_ENUM } from '@/constants/iotEnum'
 
 /**
  * 创建并初始化一个 IOT 设备状态大屏（Canvas模式）
@@ -12,13 +13,14 @@ function createIotTextScreen(put2D, deviceData) {
     width: deviceData.width,
     height: deviceData.height,
   })
-  const csLoader = new CanvasScreenLoader(put2D)
+  const csLoader = new IoTScreenLoader(put2D)
 
   csLoader.load(
     [
       {
         id: deviceData.id,
-        canvas: canvasScreen.getContainer(),
+        element: canvasScreen.getContainer(),
+        displayType: DEVICE_DATA_DISPLAY_TYPE_ENUM.CANVAS,
         deviceId: deviceData.deviceId,
         width: deviceData.width,
         height: deviceData.height,
