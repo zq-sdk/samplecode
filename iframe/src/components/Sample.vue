@@ -28,9 +28,14 @@ onMounted(() => {
     // targetOrigin: 'http://localhost:8066',
     targetOrigin: 'https://test.3dnest.cn',
     config: {
-      // hide_pop: 'on',
-      // hide_ui: 'on',
-    },
+      hide_ui: [
+        // "all",
+        "tag_pop",
+        'logo',
+        'title'
+        // "navigation",
+      ]
+    }
   })
   // 提供 messageSDK 给子组件
   messageSDK = toRaw(messageSDKRef.value)
@@ -44,12 +49,11 @@ onMounted(() => {
 
   //需要自定义热点弹窗样式通过这个事件实时更新弹窗位置
   messageSDK.on('tag.positions', (data) => {
-    // screenTags.value = data
+    screenTags.value = data
   })
 
   messageSDK.on('tag.click', (data) => {
-    console.log(data)
-    // screenTags.value = [data]
+    screenTags.value = [data]
   })
   messageSDK.on('model.switch.before', (data) => {
     screenTags.value = []
