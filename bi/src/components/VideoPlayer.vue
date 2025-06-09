@@ -135,6 +135,7 @@ onBeforeUnmount(() => {
   align-items: center;
   background-color: rgba(0, 0, 0, 0.8);
   z-index: 9999;
+  pointer-events: auto;
 }
 
 .video-player-wrapper {
