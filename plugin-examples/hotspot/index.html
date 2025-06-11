@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>QSpace Hotspot Plugin 示例</title>
+    <link rel="stylesheet" href="./src/styles/main.css" />
+  </head>
+  <body>
+    <div class="container">
+      <!-- 渲染容器 -->
+      <div id="renderer-stage"></div>
+
+      <!-- 控制面板 -->
+      <div class="control-panel">
+        <div class="panel-section">
+          <h3>视图模式</h3>
+          <div class="button-group">
+            <button id="btn-panorama" class="btn">全景模式</button>
+            <button id="btn-dollhouse" class="btn">3D模式</button>
+            <button id="btn-floorplan" class="btn">平面模式</button>
+          </div>
+        </div>
+
+        <div class="panel-section">
+          <h3>标签管理</h3>
+          <div class="button-group">
+            <button id="btn-load-tags" class="btn">加载标签</button>
+            <button id="btn-add-tag" class="btn">添加标签</button>
+            <button id="btn-cancel-add" class="btn" disabled>取消添加</button>
+            <button id="btn-delete-tag" class="btn">删除选中标签</button>
+            <button id="btn-show-all" class="btn">显示所有标签</button>
+            <button id="btn-hide-all" class="btn">隐藏所有标签</button>
+            <button id="btn-remove-all" class="btn">删除所有标签</button>
+          </div>
+        </div>
+
+        <div class="panel-section">
+          <h3>可见范围</h3>
+          <div class="range-control">
+            <label for="visible-range-slider" class="range-label">
+              可见范围: <span id="range-value">5</span> m
+            </label>
+            <input
+              type="range"
+              id="visible-range-slider"
+              class="range-slider"
+              min="1"
+              max="50"
+              value="5"
+              step="1"
+            />
+          </div>
+          <div class="button-group">
+            <button id="btn-cancel-visible-range" class="btn">
+              取消可见范围
+            </button>
+          </div>
+        </div>
+
+        <div class="panel-section">
+          <h3>可见性检测</h3>
+          <div class="button-group">
+            <button id="btn-enable-visible-check" class="btn">
+              开启标签可见性检测
+            </button>
+            <button id="btn-disable-visible-check" class="btn">
+              关闭标签可见性检测
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 信息面板 -->
+      <div class="info-panel">
+        <h3>事件日志</h3>
+        <div id="event-log" class="event-log"></div>
+      </div>
+    </div>
+
+    <!-- QSpace SDK -->
+    <script src="https://lib.3dnest.cn/release/qspace/2.0.0/umd/qspace.js"></script>
+    <!-- Hotspot Tag Plugin -->
+    <script src="https://lib.3dnest.cn/release/qspace-plugin/hotspot-tag/1.1.2/umd/HotspotTag.js"></script>
+    <!-- 示例代码 -->
+    <script type="module" src="./src/main.js"></script>
+  </body>
+</html>

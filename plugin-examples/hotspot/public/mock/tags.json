@@ -1,0 +1,192 @@
+[
+  {
+    "location_id": "location_07",
+    "position": {
+      "x": -1.407354830238026,
+      "y": -0.45177301912537987,
+      "z": -1.8354497832472472
+    },
+    "rotation": {
+      "x": 0.40347688111900026,
+      "y": 0.5882669285129285,
+      "z": 0.555506512076627,
+      "w": -0.42727150883356285
+    },
+    "visible": true,
+    "location_line": {
+      "visible": true,
+      "length": 0.3,
+      "width": 1,
+      "color": "rgb(255, 255, 255)"
+    },
+    "face": {
+      "width": 200,
+      "height": 200,
+      "scale": 1,
+      "type": "png",
+      "src": "//material.3dnest.cn/1/1/8e30cc8e5231466b_200_200.png",
+      "visible": true,
+      "bg_color": "ffffff",
+      "bg_opacity": 1
+    },
+    "_title": {
+      "text": "桌子",
+      "font_size": 14,
+      "font_color": "#000000",
+      "bg_color": { "r": 255, "g": 255, "b": 255, "a": 1 },
+      "visible": true
+    }
+  },
+  {
+    "location_id": "location_07",
+    "position": {
+      "x": -0.34183640943986504,
+      "y": -1.3432201329282427,
+      "z": -3.631763027469946
+    },
+    "rotation": {
+      "x": -0.4106995821274167,
+      "y": 0.5758304437180187,
+      "z": 0.5749259730005151,
+      "w": 0.41134569269324583
+    },
+    "visible": true,
+    "location_line": {
+      "visible": true,
+      "length": 0.6,
+      "width": 1,
+      "color": "rgb(255, 255, 255)"
+    },
+    "face": {
+      "type": "sprite",
+      "src": "//material.3dnest.cn/100809/15000443/39f3f038f725487d_172_4128.png?type=spirit",
+      "width": 172,
+      "height": 172,
+      "tile_count": 24,
+      "tile_horizontal": 1,
+      "tile_vertical": 24,
+      "tile_duration": 42,
+      "scale": 1.5,
+      "visible": true
+    },
+    "title": {
+      "text": "阳台",
+      "font_size": 14,
+      "font_color": "#000000",
+      "bg_color": { "r": 255, "g": 255, "b": 255, "a": 1 },
+      "visible": true
+    }
+  },
+  {
+    "location_id": "location_07",
+    "position": {
+      "x": -0.13977163630474,
+      "y": 1.2688853373742224,
+      "z": -2.77153605791291
+    },
+    "rotation": {
+      "x": 0.006350741183729433,
+      "y": 0.006018686019364432,
+      "z": -0.00003822458040099435,
+      "w": 0.9999617202892813
+    },
+    "visible": true,
+    "location_line": {
+      "visible": false,
+      "length": 0.6,
+      "width": 1,
+      "color": "rgb(255, 255, 255)"
+    },
+    "face": {
+      "type": "sprite",
+      "src": "//material.3dnest.cn/100809/15000443/39f3f038f725487d_172_4128.png?type=spirit",
+      "width": 172,
+      "height": 172,
+      "tile_count": 24,
+      "tile_horizontal": 1,
+      "tile_vertical": 24,
+      "tile_duration": 42,
+      "scale": 1.5,
+      "visible": false
+    },
+    "title": {
+      "text": "未定义",
+      "font_size": 14,
+      "font_color": "#000000",
+      "bg_color": { "r": 255, "g": 255, "b": 255, "a": 1 },
+      "visible": true
+    }
+  },
+  {
+    "location_id": "location_07",
+    "position": {
+      "x": 1.0464123950046695,
+      "y": -0.8404497931491552,
+      "z": -1.4576886429231777
+    },
+    "rotation": {
+      "x": -0.45352805942231167,
+      "y": 0.545168017257643,
+      "z": 0.47237088804776994,
+      "w": 0.5234213182522889
+    },
+    "visible": true,
+    "location_line": {
+      "length": 0.6,
+      "visible": true,
+      "width": 1,
+      "color": "rgb(255, 255, 255)"
+    },
+    "face": {
+      "width": 500,
+      "height": 562,
+      "scale": 1,
+      "type": "png",
+      "src": "//material.3dnest.cn/1/1373/f3dbf4b90702463f_500_562.jpg",
+      "visible": true
+    },
+    "title": {
+      "text": "沙发",
+      "font_size": 14,
+      "font_color": "#000000",
+      "bg_color": { "r": 255, "g": 255, "b": 255, "a": 1 },
+      "visible": true
+    }
+  },
+  {
+    "location_id": "location_07",
+    "position": {
+      "x": 0.0646433913015958,
+      "y": -0.5752809567252475,
+      "z": 0.6068102878905887
+    },
+    "rotation": {
+      "x": -0.4690652277253604,
+      "y": 0.53026145080257,
+      "z": 0.5174081055134933,
+      "w": 0.4807176492294072
+    },
+    "visible": true,
+    "location_line": {
+      "length": 0.6,
+      "visible": true,
+      "width": 1,
+      "color": "rgb(255, 255, 255)"
+    },
+    "face": {
+      "width": 100,
+      "height": 100,
+      "scale": 2,
+      "type": "gif",
+      "src": "//template.3dnest.cn/ncz/gif/40kb.gif",
+      "visible": true
+    },
+    "title": {
+      "text": "床",
+      "font_size": 14,
+      "font_color": "#000000",
+      "bg_color": { "r": 255, "g": 255, "b": 255, "a": 1 },
+      "visible": true
+    }
+  }
+]
