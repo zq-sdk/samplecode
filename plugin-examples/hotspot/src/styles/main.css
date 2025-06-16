@@ -266,13 +266,14 @@ body {
 /* 响应式设计 */
 @media (max-width: 768px) {
   .control-panel {
-    width: 240px;
+    width: 160px;
     padding: 16px;
   }
 
   .info-panel {
-    width: 280px;
+    width: 180px;
     height: 300px;
+    display: none;
   }
 
   .btn {
