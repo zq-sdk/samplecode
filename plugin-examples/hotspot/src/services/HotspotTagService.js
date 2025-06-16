@@ -398,6 +398,7 @@ export class HotspotTagService {
         throw new Error('标签uuid不能为空')
       }
 
+      this.plugin.unbindTransformControl(uuid)
       this.plugin.del(uuid)
       this.tagDataMap.delete(uuid)
 
