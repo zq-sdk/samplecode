@@ -224,7 +224,7 @@ class HotspotTagExample {
   async loadTags() {
     try {
       // 从 mock 数据加载标签
-      const response = await fetch('/mock/tags.json')
+      const response = await fetch('./mock/tags.json')
       const tagData = await response.json()
 
       await this.hotspotService.loadTags(tagData)
